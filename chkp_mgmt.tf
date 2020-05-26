@@ -37,7 +37,7 @@ resource "azurerm_virtual_machine" "chkpmgmt" {
     os_profile {
         computer_name  = "r80dot40mgmt"
         admin_username = "azureuser"
-        admin_password = "Cpwins1!!"
+        admin_password = "Cpwins1!"
         custom_data = file("customdata.sh") 
     }
 
