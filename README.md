@@ -5,7 +5,7 @@ Output will give you the public ip of the Standalone management server
 
 The webserver will be available on port 8090 of the Standalone manager/gateway
 
-The Attacker will get a dynamnic ip 
+The Attacker will get a dynamic ip 
 
 Update the ubuntu_web_customdata.sh file with your Infinity Next token
 
