@@ -6,12 +6,13 @@ resource "azurerm_marketplace_agreement" "checkpoint" {
 }
 
 resource "azurerm_virtual_machine" "chkpmgmt" {
-    name                  = "r80dot40mgmt"
-    location              = azurerm_resource_group.rg.location
-    resource_group_name   = azurerm_resource_group.rg.name
-    network_interface_ids = [azurerm_network_interface.mgmtexternal.id, azurerm_network_interface.mgmtinternal.id]
-    primary_network_interface_id = azurerm_network_interface.mgmtexternal.id
-    vm_size               = "Standard_D4s_v3"
+    name                          = "r80dot40mgmt"
+    location                      = azurerm_resource_group.rg.location
+    resource_group_name           = azurerm_resource_group.rg.name
+    network_interface_ids         = [azurerm_network_interface.mgmtexternal.id, azurerm_network_interface.mgmtinternal.id]
+    primary_network_interface_id  = azurerm_network_interface.mgmtexternal.id
+    vm_size                       = "Standard_D2s_v3"
+    #vm_size                      = "Standard_D4s_v3"
     
     depends_on = [azurerm_marketplace_agreement.checkpoint]
 
