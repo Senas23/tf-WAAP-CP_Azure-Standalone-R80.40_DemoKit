@@ -1,4 +1,4 @@
 resource "azurerm_resource_group" "rg" {
-  name      = "R80dot40Standalone"
-  location  = "Central US"
+  name      = var.az_rg
+  location  = var.az_location
 }

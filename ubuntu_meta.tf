@@ -1,45 +1,47 @@
 resource "azurerm_network_interface" "ubuntu-external-main" {
-  name                = "ubuntu-external-nic"
+  name                = var.ubuntu_ext_nic_ext.name
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
   ip_configuration {
-    name                          = "ubuntuexternalip"
+    name                          = ${var.ubuntu_ext_nic_ext.name}"Configuration"
     subnet_id                     = azurerm_subnet.External_subnet.id
-    private_ip_address_allocation = "Static"
-    private_ip_address = "10.95.0.100"
-    primary = true
-		public_ip_address_id = azurerm_public_ip.ubuntupublicip.id
+    private_ip_address_allocation = var.ubuntu_ext_nic_ext.ip_allocation
+    private_ip_address            = var.ubuntu_ext_nic_ext.ip_address
+    primary                       = true
+		public_ip_address_id          = azurerm_public_ip.ubuntu_pip.id
   }
 }
 
 resource "azurerm_virtual_machine" "ubuntu-external" {
-  name                  = "ubuntu-external-vm"
+  name                  = var.ubuntu_ext.name
   location              = azurerm_resource_group.rg.location
   resource_group_name   = azurerm_resource_group.rg.name
   network_interface_ids = [azurerm_network_interface.ubuntu-external-main.id]
-  vm_size               = "Standard_B1ms"
+  vm_size               = var.ubuntu_ext.vm_size
 
   delete_os_disk_on_termination = true
   delete_data_disks_on_termination = true
 
   storage_image_reference {
-    publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "18.04-LTS"
-    version   = "latest"
+    publisher = var.az_mkt_ubuntu_ext.publisher
+    offer     = var.az_mkt_ubuntu_ext.offer
+    sku       = var.az_mkt_ubuntu_ext.plan
+    version   = var.az_mkt_ubuntu_ext.version
   }
+
   storage_os_disk {
-    name              = "myosexternaldisk1"
+    name              = "${var.ubuntu_ext}_OSDisk"
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "Standard_LRS"
   }
+
   os_profile {
-    computer_name  = "Ubuntuexternal"
-    admin_username = "chkpuser"
-    admin_password = "Cpwins1!"
-    custom_data = file("ubuntu_meta_customdata.sh") 
+    computer_name  = var.ubuntu_ext.name
+    admin_username = var.ubuntu_ext.admin_username
+    admin_password = var.ubuntu_ext.admin_password
+    custom_data = file("${var.ubuntu_ext.custom_data}") 
   }
   os_profile_linux_config {
     disable_password_authentication = false

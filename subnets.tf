@@ -2,21 +2,21 @@ resource "azurerm_subnet" "External_subnet"  {
   name                  = "External"
   resource_group_name   = azurerm_resource_group.rg.name
   virtual_network_name  = azurerm_virtual_network.vnet.name
-  address_prefix        = "10.95.0.0/24"
+  address_prefix        = cidrsubnet(var.az_vnet, 4, 0)
 }
 
 resource "azurerm_subnet" "Internal_subnet"   {
   name                  = "Internal"
   resource_group_name   = azurerm_resource_group.rg.name
   virtual_network_name  = azurerm_virtual_network.vnet.name
-  address_prefix        = "10.95.1.0/24"
+  address_prefix        = cidrsubnet(var.az_vnet, 4, 1)
 }
 
 resource "azurerm_subnet" "DMZ1_subnet"  {
   name                  = "DMZ1"
   resource_group_name   = azurerm_resource_group.rg.name
   virtual_network_name  = azurerm_virtual_network.vnet.name
-  address_prefix        = "10.95.11.0/24"
+  address_prefix        = cidrsubnet(var.az_vnet, 4, 11)
   
   lifecycle { 
     ignore_changes = [route_table_id]

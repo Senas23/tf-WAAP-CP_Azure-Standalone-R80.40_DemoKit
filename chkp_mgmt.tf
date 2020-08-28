@@ -1,45 +1,43 @@
 # Create virtual machine and Accept the agreement for the mgmt-byol for R80.40
 resource "azurerm_marketplace_agreement" "checkpoint" {
-  publisher = "checkpoint"
-  offer     = "check-point-cg-r8040"
-  plan      = "mgmt-byol"
+  publisher = var.az_mkt_cp_mgmt.publisher
+  offer     = var.az_mkt_cp_mgmt.offer
+  plan      = var.az_mkt_cp_mgmt.plan
 }
 
 resource "azurerm_virtual_machine" "chkpmgmt" {
-    name                          = "r80dot40mgmt"
+    name                          = var.cp_mgmt.name
     location                      = azurerm_resource_group.rg.location
     resource_group_name           = azurerm_resource_group.rg.name
     network_interface_ids         = [azurerm_network_interface.mgmtexternal.id, azurerm_network_interface.mgmtinternal.id]
     primary_network_interface_id  = azurerm_network_interface.mgmtexternal.id
-    vm_size                       = "Standard_D2s_v3"
-    #vm_size                      = "Standard_D4s_v3"
-    
-    depends_on = [azurerm_marketplace_agreement.checkpoint]
+    vm_size                       = var.cp_mgmt.vm_size
 
     storage_os_disk {
-        name              = "R80dot40OsDisk"
+        name              = "${var.cp_mgmt.name}_OSDisk"
         caching           = "ReadWrite"
         create_option     = "FromImage"
         managed_disk_type = "Standard_LRS"
     }
 
     storage_image_reference {
-        publisher = "checkpoint"
-        offer     = "check-point-cg-r8040"
-        sku       = "mgmt-byol"
-        version   = "latest"
+        publisher = var.az_mkt_cp_mgmt.publisher
+        offer     = var.az_mkt_cp_mgmt.offer
+        sku       = var.az_mkt_cp_mgmt.plan
+        version   = var.az_mkt_cp_mgmt.version
     }
 
     plan {
-        name = "mgmt-byol"
-        publisher = "checkpoint"
-        product = "check-point-cg-r8040"
+        name      = var.az_mkt_cp_mgmt.plan
+        publisher = var.az_mkt_cp_mgmt.publisher
+        product   = var.az_mkt_cp_mgmt.product
         }
+
     os_profile {
-        computer_name  = "r80dot40mgmt"
-        admin_username = "azureuser"
-        admin_password = "Cpwins1!!"
-        custom_data = file("customdata.sh") 
+        computer_name   = var.cp_mgmt.name
+        admin_username  = var.cp_mgmt.admin_username
+        admin_password  = var.cp_mgmt.admin_password
+        custom_data     = file("${var.cp_mgmt.custom_data}") 
     }
 
     os_profile_linux_config {
@@ -47,8 +45,9 @@ resource "azurerm_virtual_machine" "chkpmgmt" {
     }
 
     boot_diagnostics {
-        enabled = "true"
+        enabled     = "true"
         storage_uri = azurerm_storage_account.mystorageaccount.primary_blob_endpoint
     }
-
+    
+    depends_on = [azurerm_marketplace_agreement.checkpoint]
 }
